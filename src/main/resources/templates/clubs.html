@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Club List</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<!-- TODO HEADER -->
+<h1>Campus Clubs</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr th:if="${clubs.empty}">
+          <td colspan="2" th:text="No Clubs configured"></td>
+      </tr>
+      <tr th:each="club : ${clubs}">
+          <td th:text="${club.name}"></td>
+          <td th:text="${club.category}"></td>
+          <td th:text="${club.description}"></td>
+          <td>
+              <a th:href="@{/clubs/{id}(id=${club.id})}">EDIT</a>
+          </td>
+      </tr>
+    </tbody>
+</table>
+</body>
+</html>
