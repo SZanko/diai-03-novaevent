@@ -31,7 +31,7 @@ class EventsService(
             id = 1,
             clubId = 1,
             //name = "Beginner&#39;s Chess Workshop",
-            name = "Beginner's Checss Workshop",
+            name = "Beginner's Chess Workshop",
             LocalDate.of(2026, 3, 10),
             Optional.of<String>("Room A101"),
             type = EventType.WORKSHOP,
