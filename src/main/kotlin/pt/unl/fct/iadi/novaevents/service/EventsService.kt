@@ -271,9 +271,9 @@ class EventsService(
             id = eventId,
             clubId = event.clubId,
             name = event.name,
-            date = event.date ?: throw EventValidationException(),
+            date = event.date,
             location = Optional.ofNullable(event.location),
-            type = EventType.valueOf(event.type!!.name),
+            type = EventType.valueOf(event.type.name),
             description = Optional.ofNullable(event.description)
         )
 
