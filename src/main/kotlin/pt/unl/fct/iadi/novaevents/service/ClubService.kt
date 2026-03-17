@@ -17,7 +17,7 @@ class ClubService(
         ),
         Club(id = 3, name = "Photography Club", description = "description", ClubCategorie.ARTS),
         Club(id = 4, name = "Hiking & Outdoors Club", description = "description", ClubCategorie.SPORTS),
-        Club(id = 5, name = "Filme Society", description = "description", ClubCategorie.SPORTS),
+        Club(id = 5, name = "Film Society", description = "description", ClubCategorie.SPORTS),
     ),
     private val clubConverter: ClubConverter
 ) {
