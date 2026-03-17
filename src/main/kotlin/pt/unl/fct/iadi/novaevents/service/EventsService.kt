@@ -169,9 +169,9 @@ class EventsService(
         )
     )
 ) {
-    private fun convertModelToDto(model: Event) : EventDto {
-        val club= clubs.find { it.id == model.clubId }?.name;
-        if(club == null) {
+    private fun convertModelToDto(model: Event): EventDto {
+        val club = clubs.find { it.id == model.clubId }?.name;
+        if (club == null) {
             throw ClubNotFoundException()
         }
         return EventDto(
@@ -186,10 +186,10 @@ class EventsService(
         )
     }
 
-    private fun convertDtoToModel(dto: EventDto) : Event {
+    private fun convertDtoToModel(dto: EventDto): Event {
         var id = dto.id;
-        if(dto.id == (-1).toLong()) {
-            id = clubs[clubs.size-1].id + 1;
+        if (dto.id == (-1).toLong()) {
+            id = clubs[clubs.size - 1].id + 1;
         }
 
         return Event(
@@ -203,10 +203,10 @@ class EventsService(
         )
     }
 
-    private fun convertModelToDto(models: List<Event>) : List<EventDto> {
+    private fun convertModelToDto(models: List<Event>): List<EventDto> {
         return models.map { convertModelToDto(it) }
     }
-    
+
     fun getEvents(type: String?, club: String?, from: String?, to: String?): List<EventDto> {
 
         val fromDate = from?.let { LocalDate.parse(it) }
@@ -220,7 +220,7 @@ class EventsService(
             matchesType && matchesClub && matchesFrom && matchesTo
         }
 
-        
+
 
         return convertModelToDto(filtered)
     }
@@ -248,6 +248,9 @@ class EventsService(
     }
 
     fun deleteEvent(club: Long, eventId: Long) {
-        
+        events.find { it.clubId == club && it.id == eventId }?.let {
+            events.remove(it)
+        }
+        throw EventNotFoundException()
     }
 }
