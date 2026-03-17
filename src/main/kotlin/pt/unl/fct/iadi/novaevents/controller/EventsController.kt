@@ -15,6 +15,7 @@ import pt.unl.fct.iadi.novaevents.service.EventsService
 @RequestMapping("/events")
 class EventsController(
     private val eventsService: EventsService,
+
 ) {
     companion object {
         private val log = LoggerFactory.getLogger(this::class.java)
@@ -32,6 +33,17 @@ class EventsController(
         model.addAttribute("events", eventsService.getEvents(type = type, club = club, from = from, to = to))
 
         return "events"
+    }
+
+    @GetMapping("/{club}/{eventId}")
+    fun getEvent(@PathVariable club: Long, @PathVariable eventId: Long, model: Model): String {
+        log.info("Get club $club Event $eventId")
+
+        val event: EventDto = eventsService.getEventByClubIdAndId(club, eventId)
+
+        model.addAttribute("event", event)
+
+        return "event"
     }
 
 }
