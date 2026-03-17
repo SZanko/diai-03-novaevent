@@ -246,4 +246,8 @@ class EventsService(
 
         return convertModelToDto(toBeSaved)
     }
+
+    fun deleteEvent(club: Long, eventId: Long) {
+        
+    }
 }

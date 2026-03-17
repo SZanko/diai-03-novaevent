@@ -1,10 +1,13 @@
 package pt.unl.fct.iadi.novaevents.controller
 
+import jakarta.validation.Valid
 import jakarta.websocket.server.PathParam
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -43,20 +46,23 @@ class ClubsController(
         return "club";
     }
 
-
-    @PostMapping("{club}/add")
-    fun createEvent(model: Model, event: EventDto, @PathVariable club: Long): String {
-        log.info("Create event for club $club, with eventClubId ${event.clubId}")
+    @PostMapping("/{club}/add")
+    fun createEvent(
+        @PathVariable club: Long,
+        @Valid @ModelAttribute("event") event: EventDto,
+        bindingResult: BindingResult,
+        model: Model
+    ): String {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("clubId", club)
+            return "event-add"
+        }
 
         event.clubId = club
-
-        val event: EventDto =  eventService.saveEvent(event)
-
-        model.addAttribute("event", event)
-
-
-        return "event"
+        val saved = eventService.saveEvent(event)
+        return "redirect:/clubs/${saved.clubId}/${saved.id}"
     }
+
 
     @GetMapping("{club}/add")
     fun addEvent(model: Model, @PathVariable club: Long): String {
@@ -83,9 +89,29 @@ class ClubsController(
     fun editEvent(@PathVariable club: Long, @PathVariable eventId: Long, model: Model): String {
         log.info("Edit club $club Event $eventId")
         val event: EventDto =  eventService.getEventByClubIdAndId(club, eventId)
-
         model.addAttribute("event", event)
+        model.addAttribute("clubId", club)
 
         return "event"
+    }
+
+    @GetMapping("/{club}/{eventId}/delete")
+    fun confirmDelete(
+        @PathVariable club: Long,
+        @PathVariable eventId: Long,
+        model: Model
+    ): String {
+        val event = eventService.getEventByClubIdAndId(club, eventId)
+        model.addAttribute("event", event)
+        return "event-delete"
+    }
+
+    @PostMapping("/{club}/{eventId}/delete")
+    fun deleteEvent(
+        @PathVariable club: Long,
+        @PathVariable eventId: Long
+    ): String {
+        eventService.deleteEvent(club, eventId)
+        return "redirect:/clubs/$club"
     }
 }
