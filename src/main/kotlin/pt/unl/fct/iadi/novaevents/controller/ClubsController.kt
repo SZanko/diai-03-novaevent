@@ -42,6 +42,7 @@ class ClubsController(
         val found = clubService.findClubById(id)
 
         model.addAttribute("club", found)
+        model.addAttribute("events", eventService.getEvents(club = id.toString(), type = null, from = null, to = null))
 
         return "club";
     }
@@ -60,7 +61,8 @@ class ClubsController(
 
         event.clubId = club
         val saved = eventService.saveEvent(event)
-        return "redirect:/clubs/${saved.clubId}/${saved.id}"
+        //return "redirect:/clubs/${saved.clubId}/${saved.id}"
+        return "redirect:/clubs/$club"
     }
 
 
@@ -92,8 +94,27 @@ class ClubsController(
         model.addAttribute("event", event)
         model.addAttribute("clubId", club)
 
-        return "event"
+        return "event-edit"
     }
+
+    @PostMapping("/{club}/{eventId}/edit")
+    fun updateEvent(
+        @PathVariable club: Long,
+        @PathVariable eventId: Long,
+        @Valid @ModelAttribute("event") event: EventDto,
+        bindingResult: BindingResult,
+        model: Model
+    ): String {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("clubId", club)
+            return "event-edit"
+        }
+
+        event.clubId = club
+        val updated = eventService.updateEvent(eventId, event)
+        return "redirect:/clubs/$club"
+    }
+
 
     @GetMapping("/{club}/{eventId}/delete")
     fun confirmDelete(

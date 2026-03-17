@@ -10,37 +10,41 @@
 <header th:insert="~{fragments/navbar :: header}"></header>
 <main class="container">
 
-    <h1>Campus Clubs</h1>
-    <table>
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:if="${clubs.empty}">
-            <td colspan="2" th:text="No Clubs configured"></td>
-        </tr>
-        <tr th:each="club : ${clubs}">
-            <td th:text="${club.name}"></td>
-            <td th:text="${club.category}"></td>
-            <td>
-                <details>
-                    <summary>Description</summary>
-                    <p th:text="${club.description}"></p>
-                </details>
+    <div th:fragment="clubs">
+        <h1>Campus Clubs</h1>
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${clubs.empty}">
+                <td colspan="2" th:text="No Clubs configured"></td>
+            </tr>
+            <tr th:each="club : ${clubs}">
+                <td th:text="${club.name}"></td>
+                <td th:text="${club.category}"></td>
+                <td>
+                    <details>
+                        <summary>Description</summary>
+                        <p th:text="${club.description}"></p>
+                    </details>
 
-            </td>
+                </td>
 
-            <td>
-                <a th:href="@{/clubs/{id}(id=${club.id})}">EDIT</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <td>
+                    <a th:href="@{/clubs/{id}(id=${club.id})}">EDIT</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
 </main>
 </body>
 </html>

@@ -180,9 +180,9 @@ class EventsService(
             club = club,
             name = model.name,
             date = model.date,
-            location = model.location.get(),
+            location = model.location.orElse(null),
             type = EventTypeDTO.valueOf(model.type.name),
-            description = model.description.get(),
+            description = model.description.orElse(null),
         )
     }
 
@@ -215,8 +215,8 @@ class EventsService(
         val filtered = events.filter { event ->
             val matchesType = type == null || event.type.name == type
             val matchesClub = club == null || event.clubId.toString() == club
-            val matchesFrom = fromDate == null || !event.date.isAfter(fromDate)
-            val matchesTo = toDate == null || !event.date.isBefore(toDate)
+            val matchesFrom = fromDate == null || !event.date.isBefore(fromDate)
+            val matchesTo = toDate == null || !event.date.isAfter(toDate)
             matchesType && matchesClub && matchesFrom && matchesTo
         }
 
@@ -248,9 +248,13 @@ class EventsService(
     }
 
     fun deleteEvent(club: Long, eventId: Long) {
-        events.find { it.clubId == club && it.id == eventId }?.let {
-            events.remove(it)
-        }
-        throw EventNotFoundException()
+        val event = events.find { it.clubId == club && it.id == eventId }
+            ?: throw EventNotFoundException()
+
+        events.remove(event)
+    }
+
+    fun updateEvent(eventId: Long, event: EventDto): EventDto? {
+        return null
     }
 }
