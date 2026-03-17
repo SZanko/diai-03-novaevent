@@ -189,7 +189,7 @@ class EventsService(
     private fun convertDtoToModel(dto: EventDto): Event {
         var id = dto.id;
         if (dto.id == (-1).toLong()) {
-            id = clubs[clubs.size - 1].id + 1;
+            id = events[events.size - 1].id + 1;
         }
 
         return Event(
@@ -240,6 +240,10 @@ class EventsService(
         if (violations.isNotEmpty()) {
             throw EventValidationException()
         }
+        val duplicate = events.any { it.name.equals(event.name, ignoreCase = true) }
+        if (duplicate) {
+            throw EventValidationException()
+        }
 
         events.add(toBeSaved)
 
@@ -255,6 +259,25 @@ class EventsService(
     }
 
     fun updateEvent(eventId: Long, event: EventDto): EventDto? {
-        return null
+        val existingIndex = events.indexOfFirst { it.id == eventId && it.clubId == event.clubId }
+        if (existingIndex == -1) throw EventNotFoundException()
+
+        val duplicate = events.any {
+            it.id != eventId && it.name.equals(event.name, ignoreCase = true)
+        }
+        if (duplicate) throw EventValidationException()
+
+        val updated = Event(
+            id = eventId,
+            clubId = event.clubId,
+            name = event.name,
+            date = event.date ?: throw EventValidationException(),
+            location = Optional.ofNullable(event.location),
+            type = EventType.valueOf(event.type!!.name),
+            description = Optional.ofNullable(event.description)
+        )
+
+        events[existingIndex] = updated
+        return convertModelToDto(updated)
     }
 }
