@@ -183,8 +183,18 @@ class EventsService(
     }
     
     fun getEvents(type: String?, club: String?, from: String?, to: String?): List<EventDto> {
-        val filtered = events;
-        
+
+        val fromDate = from?.let { LocalDate.parse(it) }
+        val toDate = to?.let { LocalDate.parse(it) }
+
+        val filtered = events.filter { event ->
+            val matchesType = type == null || event.type.name == type
+            val matchesClub = club == null || event.clubId.toString() == club
+            val matchesFrom = fromDate == null || !event.date.isAfter(fromDate)
+            val matchesTo = toDate == null || !event.date.isBefore(toDate)
+            matchesType && matchesClub && matchesFrom && matchesTo
+        }
+
         
 
         return convertModelToDto(filtered)
