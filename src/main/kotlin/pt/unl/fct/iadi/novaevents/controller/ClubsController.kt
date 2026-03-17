@@ -34,7 +34,7 @@ class ClubsController(
 
         log.info("Get club $id details")
 
-        val found = clubService.findClubById(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND);
+        val found = clubService.findClubById(id)
 
         model.addAttribute("club", found)
 

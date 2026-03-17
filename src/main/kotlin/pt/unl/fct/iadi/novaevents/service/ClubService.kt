@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import pt.unl.fct.iadi.novaevents.controller.dto.ClubDto
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.ClubCategorie
+import pt.unl.fct.iadi.novaevents.service.exceptions.ClubNotFoundException
 
 @Service
 class ClubService(
@@ -28,11 +29,11 @@ class ClubService(
         return clubConverter.convertModelToDto(clubs)
     }
 
-    fun findClubById(id: Long): ClubDto? {
+    fun findClubById(id: Long): ClubDto {
 
         clubs.find { it.id == id }?.let {
             return clubConverter.convertModelToDto(it)
         }
-        return null
+        throw ClubNotFoundException()
     }
 }
