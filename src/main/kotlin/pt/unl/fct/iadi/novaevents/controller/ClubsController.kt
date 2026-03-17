@@ -1,11 +1,14 @@
 package pt.unl.fct.iadi.novaevents.controller
 
+import jakarta.websocket.server.PathParam
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import pt.unl.fct.iadi.novaevents.controller.dto.EventDto
 import pt.unl.fct.iadi.novaevents.service.ClubService
 import pt.unl.fct.iadi.novaevents.service.EventsService
@@ -31,7 +34,6 @@ class ClubsController(
 
     @GetMapping("/{id}")
     fun getClubDetails(@PathVariable id: Long, model: Model): String {
-
         log.info("Get club $id details")
 
         val found = clubService.findClubById(id)
@@ -41,9 +43,34 @@ class ClubsController(
         return "club";
     }
 
+
+    @PostMapping("{club}/add")
+    fun createEvent(model: Model, event: EventDto, @PathVariable club: Long): String {
+        log.info("Create event for club $club, with eventClubId ${event.clubId}")
+
+        event.clubId = club
+
+        val event: EventDto =  eventService.saveEvent(event)
+
+        model.addAttribute("event", event)
+
+
+        return "event"
+    }
+
+    @GetMapping("{club}/add")
+    fun addEvent(model: Model, @PathVariable club: Long): String {
+        log.info("Send Form for adding Event")
+        model.addAttribute("event", EventDto())
+        model.addAttribute("clubId", club)
+
+        return "event-add"
+    }
+
+
     @GetMapping("/{club}/{eventId}")
     fun getEvent(@PathVariable club: Long, @PathVariable eventId: Long, model: Model): String {
-        log.info("Get club $club/$eventId")
+        log.info("Get club $club Event $eventId")
 
         val event: EventDto =  eventService.getEventByClubIdAndId(club, eventId)
 
@@ -54,7 +81,7 @@ class ClubsController(
 
     @GetMapping("/{club}/{eventId}/edit")
     fun editEvent(@PathVariable club: Long, @PathVariable eventId: Long, model: Model): String {
-        log.info("Edit club $club/$eventId")
+        log.info("Edit club $club Event $eventId")
         val event: EventDto =  eventService.getEventByClubIdAndId(club, eventId)
 
         model.addAttribute("event", event)

@@ -6,13 +6,13 @@ import java.time.LocalDate
 import java.util.Optional
 
 data class EventDto(
-    val id: Long,
-    val club: String,
-    val clubId: Long,
+    val id: Long = -1,
+    val club: String = "",
+    var clubId: Long = -1,
     @field:NotBlank
-    val name: String,
-    val date: LocalDate,
-    val location: Optional<String>,
-    val type: EventType,
-    val description: Optional<String>,
+    val name: String = "",
+    val date: LocalDate = LocalDate.now(),
+    val location: String? = null,
+    val type: EventTypeDTO = EventTypeDTO.OTHER,
+    val description: String? = null,
 )

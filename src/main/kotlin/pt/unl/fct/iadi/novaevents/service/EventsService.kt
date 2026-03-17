@@ -1,18 +1,22 @@
 package pt.unl.fct.iadi.novaevents.service
 
+import jakarta.validation.Validator
 import org.springframework.stereotype.Service
 import pt.unl.fct.iadi.novaevents.controller.dto.EventDto
+import pt.unl.fct.iadi.novaevents.controller.dto.EventTypeDTO
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.ClubCategorie
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
 import pt.unl.fct.iadi.novaevents.service.exceptions.ClubNotFoundException
 import pt.unl.fct.iadi.novaevents.service.exceptions.EventNotFoundException
+import pt.unl.fct.iadi.novaevents.service.exceptions.EventValidationException
 import java.time.LocalDate
 import java.util.Optional
 
 @Service
 class EventsService(
+    private val validator: Validator,
     // Because there is no db copy and paste the code
     private val clubs: List<Club> = listOf(
         Club(id = 1, name = "Chess Club", description = "Chess Club description", ClubCategorie.SPORTS),
@@ -26,7 +30,7 @@ class EventsService(
         Club(id = 4, name = "Hiking & Outdoors Club", description = "description", ClubCategorie.SPORTS),
         Club(id = 5, name = "Film Society", description = "description", ClubCategorie.SPORTS),
     ),
-    private val events: List<Event> = listOf(
+    private val events: MutableList<Event> = mutableListOf(
         Event(
             id = 1,
             clubId = 1,
@@ -176,9 +180,26 @@ class EventsService(
             club = club,
             name = model.name,
             date = model.date,
-            location = model.location,
-            type = model.type,
-            description = model.description,
+            location = model.location.get(),
+            type = EventTypeDTO.valueOf(model.type.name),
+            description = model.description.get(),
+        )
+    }
+
+    private fun convertDtoToModel(dto: EventDto) : Event {
+        var id = dto.id;
+        if(dto.id == (-1).toLong()) {
+            id = clubs[clubs.size-1].id + 1;
+        }
+
+        return Event(
+            id = id,
+            clubId = dto.clubId,
+            name = dto.name,
+            date = dto.date,
+            location = Optional.ofNullable(dto.location),
+            type = EventType.valueOf(dto.type.name),
+            description = Optional.ofNullable(dto.description),
         )
     }
 
@@ -209,5 +230,20 @@ class EventsService(
             return convertModelToDto(it)
         }
         throw EventNotFoundException()
+    }
+
+    fun saveEvent(event: EventDto): EventDto {
+        val toBeSaved = convertDtoToModel(event)
+
+
+        val violations = validator.validate(toBeSaved)
+        if (violations.isNotEmpty()) {
+            throw EventValidationException()
+        }
+
+        events.add(toBeSaved)
+
+
+        return convertModelToDto(toBeSaved)
     }
 }
