@@ -35,8 +35,20 @@ class EventsController(
         return "events"
     }
 
+
+    @GetMapping("/{eventId}")
+    fun getEvent(@PathVariable eventId: Long, model: Model): String {
+        log.info("Get Event $eventId")
+
+        val event: EventDto = eventsService.getEventById(eventId)
+
+        model.addAttribute("event", event)
+
+        return "event"
+    }
+
     @GetMapping("/{club}/{eventId}")
-    fun getEvent(@PathVariable club: Long, @PathVariable eventId: Long, model: Model): String {
+    fun getEventWithClub(@PathVariable club: Long, @PathVariable eventId: Long, model: Model): String {
         log.info("Get club $club Event $eventId")
 
         val event: EventDto = eventsService.getEventByClubIdAndId(club, eventId)

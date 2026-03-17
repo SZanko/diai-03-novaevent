@@ -280,4 +280,11 @@ class EventsService(
         events[existingIndex] = updated
         return convertModelToDto(updated)
     }
+
+    fun getEventById(eventId: Long): EventDto {
+        events.find { it.id == eventId }?.let {
+            return convertModelToDto(it)
+        }
+        throw EventNotFoundException()
+    }
 }
