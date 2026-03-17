@@ -1,13 +1,13 @@
 package pt.unl.fct.iadi.novaevents.service
 
 import org.springframework.stereotype.Service
-import org.springframework.web.client.HttpClientErrorException
 import pt.unl.fct.iadi.novaevents.controller.dto.EventDto
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.ClubCategorie
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
 import pt.unl.fct.iadi.novaevents.service.exceptions.ClubNotFoundException
+import pt.unl.fct.iadi.novaevents.service.exceptions.EventNotFoundException
 import java.time.LocalDate
 import java.util.Optional
 
@@ -30,7 +30,8 @@ class EventsService(
         Event(
             id = 1,
             clubId = 1,
-            name = "Beginner's Checss Workshop",
+            name = "Beginner&#39;s Chess Workshop",
+            //name = "Beginner's Checss Workshop",
             LocalDate.of(2026, 3, 10),
             Optional.of<String>("Room A101"),
             type = EventType.WORKSHOP,
@@ -170,11 +171,14 @@ class EventsService(
             throw ClubNotFoundException()
         }
         return EventDto(
-            club= club,
+            id = model.id,
+            clubId = model.clubId,
+            club = club,
             name = model.name,
             date = model.date,
             location = model.location,
             type = model.type,
+            description = model.description,
         )
     }
 
@@ -198,5 +202,12 @@ class EventsService(
         
 
         return convertModelToDto(filtered)
+    }
+
+    fun getEventByClubIdAndId(club: Long, eventId: Long): EventDto {
+        events.find { it.clubId == club && it.id == eventId }?.let {
+            return convertModelToDto(it)
+        }
+        throw EventNotFoundException()
     }
 }

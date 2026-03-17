@@ -10,9 +10,9 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
-<header th:insert="fragments/navbar.html" :: header></header>
+<header th:insert="~{fragments/navbar :: header}"></header>
 <div class="container">
-
+    <!-- TODO filter stuff html -->
 </div>
 <main class="container">
     <table class="table table-striped">
@@ -37,12 +37,13 @@
             <td th:text="${event.type}"></td>
             <td th:text="${event.location}"></td>
             <td>
-            <a class="btn btn-secondary" th:href="@{/events/${event.id}/edit}">
-                Edit
-            </a>
-            <a class="btn btn-secondary" th:href="@{/events/${event.id}/delete}">
-                Delete
-            </a>
+                <a class="btn btn-secondary" th:href="@{/clubs/{clubid}/{id}/edit(clubid=${event.clubId}, id=${event.id})}">
+                    Edit
+                </a>
+                <a class="btn btn-secondary"
+                   th:href="@{/clubs/{clubid}/{id}/delete(clubid=${event.clubId}, id=${event.id})}">
+                    Delete
+                </a>
             </td>
         </tr>
         </tbody>
