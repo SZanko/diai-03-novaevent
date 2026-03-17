@@ -23,7 +23,9 @@
             </thead>
             <tbody>
             <tr th:if="${clubs.empty}">
-                <td colspan="2" th:text="No Clubs configured"></td>
+                <td colspan="2">
+                    <p>No Clubs available</p>
+                </td>
             </tr>
             <tr th:each="club : ${clubs}">
                 <td th:text="${club.name}"></td>
