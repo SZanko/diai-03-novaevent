@@ -102,7 +102,8 @@ class EventsController(
         return "event-edit"
     }
 
-    @PutMapping("/clubs/{clubId}/events/{eventId}")
+    //@PutMapping("/clubs/{clubId}/events/{eventId}")
+    @PostMapping("/clubs/{clubId}/events/{eventId}")
     fun updateEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
@@ -120,7 +121,8 @@ class EventsController(
             return "event-edit"
         }
 
-        event.clubId = club.id;
+        eventForm.clubId = club.id;
+        eventForm.id = eventId;
 
         return try {
             eventService.updateEvent(eventId, eventForm)

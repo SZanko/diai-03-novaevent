@@ -17,12 +17,18 @@
       <label>Name
       <input type="text" th:field="*{name}" class="form-control"/>
       </label>
+      <div class="text-danger"
+           th:if="${#fields.hasErrors('name')}"
+           th:errors="*{name}"></div>
     </div>
 
     <div class="mb-3">
       <label>Date
       <input type="date" th:field="*{date}" class="form-control"/>
       </label>
+      <div class="text-danger"
+           th:if="${#fields.hasErrors('date')}"
+           th:errors="*{date}"></div>
     </div>
     <div class="mb-3">
       <label>Type
@@ -33,6 +39,9 @@
           </option>
         </select>
       </label>
+      <div class="text-danger"
+           th:if="${#fields.hasErrors('type')}"
+           th:errors="*{type}"></div>
     </div>
 
     <div class="mb-3">

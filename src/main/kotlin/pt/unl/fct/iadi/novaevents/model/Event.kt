@@ -11,12 +11,12 @@ data class Event(
     val id: Long,
     @field:Min(value = 1, message = "Event ID must be greater than or equal to 1")
     val clubId: Long,
-    @field:NotBlank
+    @field:NotBlank(message = "Name is required")
     val name: String,
-    @field:NotNull
+    @field:NotNull(message = "Date is required")
     val date: LocalDate,
     val location: Optional<String>,
-    @field:NotNull
+    @field:NotNull(message = "Event type is required")
     val type: EventType,
     val description: Optional<String>,
     )
