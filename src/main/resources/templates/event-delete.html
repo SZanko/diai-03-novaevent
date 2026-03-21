@@ -35,11 +35,12 @@
 
     <form th:action="@{/clubs/{club}/{eventId}/delete(club=${event.clubId}, eventId=${event.id})}"
           method="post">
-        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <button type="submit" class="btn btn-danger">Yes, Delete
         <a class="btn btn-secondary"
            th:href="@{/clubs/{club}/{eventId}(club=${event.clubId}, eventId=${event.id})}">
             Cancel
         </a>
+        </button>
     </form>
 </main>
 </body>

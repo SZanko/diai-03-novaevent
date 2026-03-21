@@ -18,7 +18,7 @@ import pt.unl.fct.iadi.novaevents.service.EventsService
 
 @Controller
 @RequestMapping("/clubs")
-class ClubController(
+class ClubsController(
     private val clubService: ClubService,
     private val eventService: EventsService
 ) {

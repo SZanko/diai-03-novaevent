@@ -19,7 +19,6 @@ import pt.unl.fct.iadi.novaevents.service.EventsService
 import pt.unl.fct.iadi.novaevents.service.exceptions.EventDuplicateNameException
 
 @Controller
-@RequestMapping("/events")
 class EventsController(
     private val eventService: EventsService,
     private val clubService: ClubService,
@@ -29,30 +28,18 @@ class EventsController(
         private val log = LoggerFactory.getLogger(this::class.java)
     }
 
-    @GetMapping
+    @GetMapping("/events")
     fun listAllEvents(
         model: Model,
-        @RequestParam type: String?,
-        @RequestParam club: String?,
-        @RequestParam from: String?,
-        @RequestParam to: String?
+        @RequestParam(required = false) type: String?,
+        @RequestParam(required = false) club: String?,
+        @RequestParam(required = false) from: String?,
+        @RequestParam(required = false) to: String?
     ): String {
 
         model.addAttribute("events", eventService.getEvents(type = type, club = club, from = from, to = to))
 
         return "events"
-    }
-
-
-    @GetMapping("/{eventId}")
-    fun getEvent(@PathVariable eventId: Long, model: Model): String {
-        log.info("Get Event $eventId")
-
-        val event: EventDto = eventService.getEventById(eventId)
-
-        model.addAttribute("event", event)
-
-        return "event"
     }
 
     @GetMapping("/clubs/{clubId}/events/{eventId}")
@@ -69,7 +56,7 @@ class EventsController(
     fun showCreateForm(@PathVariable clubId: Long, model: Model): String {
         val club = clubService.findById(clubId)
         model.addAttribute("club", club)
-        model.addAttribute("eventForm", EventDto())
+        model.addAttribute("event", EventDto())
         model.addAttribute("isEdit", false)
         return "event-add"
     }
@@ -103,16 +90,6 @@ class EventsController(
 
 
 
-    @GetMapping("/{club}/{eventId}")
-    fun getEventWithClub(@PathVariable club: Long, @PathVariable eventId: Long, model: Model): String {
-        log.info("Get club $club Event $eventId")
-
-        val event: EventDto = eventService.getEventByClubIdAndId(club, eventId)
-
-        model.addAttribute("event", event)
-
-        return "event"
-    }
 
 
     @GetMapping("/clubs/{clubId}/events/{eventId}/edit")
@@ -129,7 +106,7 @@ class EventsController(
     fun updateEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,
-        @Valid @ModelAttribute("eventForm") eventForm: EventDto,
+        @Valid @ModelAttribute("event") eventForm: EventDto,
         bindingResult: BindingResult,
         model: Model
     ): String {

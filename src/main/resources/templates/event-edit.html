@@ -13,13 +13,14 @@
 <main class="container mt-4">
     <h1>Edit Event</h1>
 
-    <form th:action="@{/clubs/{club}/{eventId}/edit(club=${event.clubId}, eventId=${event.id})}"
+    <form th:action="@{/clubs/{club}/events/{eventId}(club=${event.clubId}, eventId=${event.id})}"
           th:object="${event}"
           method="post">
 
         <div class="mb-3">
-            <label class="form-label">Name</label>
+            <label class="form-label">Name
             <input type="text" th:field="*{name}" class="form-control"/>
+            </label>
             <div class="text-danger"
                  th:if="${#fields.hasErrors('name')}"
                  th:errors="*{name}"></div>

@@ -11,7 +11,7 @@
 <header th:insert="~{fragments/navbar :: header}"></header>
 
 <main class="container">
-  <form th:action="@{/clubs/{club}/add(club=${clubId})}" th:object="${event}" method="post">
+  <form th:action="@{/clubs/{club}/events(club=${clubId})}" th:object="${event}" method="post">
 
     <div class="mb-3">
       <label>Name
