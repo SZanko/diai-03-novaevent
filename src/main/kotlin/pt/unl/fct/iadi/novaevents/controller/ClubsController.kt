@@ -18,121 +18,22 @@ import pt.unl.fct.iadi.novaevents.service.EventsService
 
 @Controller
 @RequestMapping("/clubs")
-class ClubsController(
-    val clubService: ClubService,
-    val eventService: EventsService,
+class ClubController(
+    private val clubService: ClubService,
+    private val eventService: EventsService
 ) {
-    companion object {
-        private val log = LoggerFactory.getLogger(this::class.java)
-    }
 
     @GetMapping
     fun listClubs(model: Model): String {
-        log.info("Get all clubs page")
-
         model.addAttribute("clubs", clubService.findAll())
-
         return "clubs"
     }
 
-    @GetMapping("/{id}")
-    fun getClubDetails(@PathVariable id: Long, model: Model): String {
-        log.info("Get club $id details")
-
-        val found = clubService.findClubById(id)
-
-        model.addAttribute("club", found)
-        model.addAttribute("events", eventService.getEvents(club = id.toString(), type = null, from = null, to = null))
-
-        return "club";
-    }
-
-    @PostMapping("/{club}/add")
-    fun createEvent(
-        @PathVariable club: Long,
-        @Valid @ModelAttribute("event") event: EventDto,
-        bindingResult: BindingResult,
-        model: Model
-    ): String {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("clubId", club)
-            return "event-add"
-        }
-
-        event.clubId = club
-        val saved = eventService.saveEvent(event)
-        //return "redirect:/clubs/${saved.clubId}/${saved.id}"
-        return "redirect:/clubs/$club"
-    }
-
-
-    @GetMapping("{club}/add")
-    fun addEvent(model: Model, @PathVariable club: Long): String {
-        log.info("Send Form for adding Event")
-        model.addAttribute("event", EventDto())
-        model.addAttribute("clubId", club)
-
-        return "event-add"
-    }
-
-
-    @GetMapping("/{club}/{eventId}")
-    fun getEvent(@PathVariable club: Long, @PathVariable eventId: Long, model: Model): String {
-        log.info("Get club $club Event $eventId")
-
-        val event: EventDto =  eventService.getEventByClubIdAndId(club, eventId)
-
-        model.addAttribute("event", event)
-
-        return "event"
-    }
-
-    @GetMapping("/{club}/{eventId}/edit")
-    fun editEvent(@PathVariable club: Long, @PathVariable eventId: Long, model: Model): String {
-        log.info("Edit club $club Event $eventId")
-        val event: EventDto =  eventService.getEventByClubIdAndId(club, eventId)
-        model.addAttribute("event", event)
-        model.addAttribute("clubId", club)
-
-        return "event-edit"
-    }
-
-    @PostMapping("/{club}/{eventId}/edit")
-    fun updateEvent(
-        @PathVariable club: Long,
-        @PathVariable eventId: Long,
-        @Valid @ModelAttribute("event") event: EventDto,
-        bindingResult: BindingResult,
-        model: Model
-    ): String {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("clubId", club)
-            return "event-edit"
-        }
-
-        event.clubId = club
-        val updated = eventService.updateEvent(eventId, event)
-        return "redirect:/clubs/$club"
-    }
-
-
-    @GetMapping("/{club}/{eventId}/delete")
-    fun confirmDelete(
-        @PathVariable club: Long,
-        @PathVariable eventId: Long,
-        model: Model
-    ): String {
-        val event = eventService.getEventByClubIdAndId(club, eventId)
-        model.addAttribute("event", event)
-        return "event-delete"
-    }
-
-    @PostMapping("/{club}/{eventId}/delete")
-    fun deleteEvent(
-        @PathVariable club: Long,
-        @PathVariable eventId: Long
-    ): String {
-        eventService.deleteEvent(club, eventId)
-        return "redirect:/clubs/$club"
+    @GetMapping("/{clubId}")
+    fun clubDetail(@PathVariable clubId: Long, model: Model): String {
+        val club = clubService.findById(clubId)
+        model.addAttribute("club", club)
+        model.addAttribute("events", eventService.findByClub(clubId))
+        return "club"
     }
 }

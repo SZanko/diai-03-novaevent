@@ -29,7 +29,7 @@ class ClubService(
         return clubConverter.convertModelToDto(clubs)
     }
 
-    fun findClubById(id: Long): ClubDto {
+    fun findById(id: Long): ClubDto {
 
         clubs.find { it.id == id }?.let {
             return clubConverter.convertModelToDto(it)

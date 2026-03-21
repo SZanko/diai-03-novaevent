@@ -2,6 +2,7 @@ package pt.unl.fct.iadi.novaevents.service
 
 import jakarta.validation.Validator
 import org.springframework.stereotype.Service
+import pt.unl.fct.iadi.novaevents.controller.dto.ClubDto
 import pt.unl.fct.iadi.novaevents.controller.dto.EventDto
 import pt.unl.fct.iadi.novaevents.controller.dto.EventTypeDTO
 import pt.unl.fct.iadi.novaevents.model.Club
@@ -9,6 +10,7 @@ import pt.unl.fct.iadi.novaevents.model.ClubCategorie
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
 import pt.unl.fct.iadi.novaevents.service.exceptions.ClubNotFoundException
+import pt.unl.fct.iadi.novaevents.service.exceptions.EventDuplicateNameException
 import pt.unl.fct.iadi.novaevents.service.exceptions.EventNotFoundException
 import pt.unl.fct.iadi.novaevents.service.exceptions.EventValidationException
 import java.time.LocalDate
@@ -17,6 +19,7 @@ import java.util.Optional
 @Service
 class EventsService(
     private val validator: Validator,
+    private val clubConverter: ClubConverter,
     // Because there is no db copy and paste the code
     private val clubs: List<Club> = listOf(
         Club(id = 1, name = "Chess Club", description = "Chess Club description", ClubCategorie.SPORTS),
@@ -242,7 +245,7 @@ class EventsService(
         }
         val duplicate = events.any { it.name.equals(event.name, ignoreCase = true) }
         if (duplicate) {
-            throw EventValidationException()
+            throw EventDuplicateNameException()
         }
 
         events.add(toBeSaved)
@@ -287,4 +290,12 @@ class EventsService(
         }
         throw EventNotFoundException()
     }
+
+    fun findByClub(clubId: Long): List<EventDto> {
+        val filtered = events
+            .filter { it.clubId == clubId }
+
+        return convertModelToDto(filtered)
+    }
+
 }
