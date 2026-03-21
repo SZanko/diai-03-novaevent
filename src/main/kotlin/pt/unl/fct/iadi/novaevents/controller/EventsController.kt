@@ -102,8 +102,9 @@ class EventsController(
         return "event-edit"
     }
 
-    //@PutMapping("/clubs/{clubId}/events/{eventId}")
-    @PostMapping("/clubs/{clubId}/events/{eventId}")
+    @PutMapping("/clubs/{clubId}/events/{eventId}")
+    // Test assumes PUT not post
+    //@PostMapping("/clubs/{clubId}/events/{eventId}")
     fun updateEvent(
         @PathVariable clubId: Long,
         @PathVariable eventId: Long,

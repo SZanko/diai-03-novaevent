@@ -17,6 +17,8 @@
           th:object="${event}"
           method="post">
 
+        <input type="hidden" name="_method" value="put"/>
+
         <div class="mb-3">
             <label class="form-label">Name
             <input type="text" th:field="*{name}" class="form-control"/>
