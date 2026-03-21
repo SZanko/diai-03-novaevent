@@ -131,7 +131,7 @@ class EventsController(
         } catch (exception: EventDuplicateNameException) {
             bindingResult.rejectValue("name", "duplicate", exception.message ?: "An event with this name already exists")
             model.addAttribute("club", club)
-            model.addAttribute("event", event)
+            model.addAttribute("event", eventForm)
             model.addAttribute("isEdit", true)
             "event-edit"
         }
