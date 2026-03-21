@@ -199,9 +199,9 @@ class EventsService(
             id = id,
             clubId = dto.clubId,
             name = dto.name,
-            date = dto.date,
+            date = dto.date!!,
             location = Optional.ofNullable(dto.location),
-            type = EventType.valueOf(dto.type.name),
+            type = EventType.valueOf(dto.type!!.name),
             description = Optional.ofNullable(dto.description),
         )
     }
@@ -268,15 +268,15 @@ class EventsService(
         val duplicate = events.any {
             it.id != eventId && it.name.equals(event.name, ignoreCase = true)
         }
-        if (duplicate) throw EventValidationException()
+        if (duplicate) throw EventDuplicateNameException()
 
         val updated = Event(
             id = eventId,
             clubId = event.clubId,
             name = event.name,
-            date = event.date,
+            date = event.date!!,
             location = Optional.ofNullable(event.location),
-            type = EventType.valueOf(event.type.name),
+            type = EventType.valueOf(event.type!!.name),
             description = Optional.ofNullable(event.description)
         )
 

@@ -15,8 +15,9 @@ data class EventDto(
     var name: String = "",
     @field:DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @field:NotNull(message = "Date is required")
-    var date: LocalDate = LocalDate.now(),
+    var date: LocalDate? = null,
     var location: String? = null,
-    var type: EventTypeDTO = EventTypeDTO.OTHER,
+    @field:NotNull(message = "Event type is required")
+    var type: EventTypeDTO? = null,
     var description: String? = null,
 )
