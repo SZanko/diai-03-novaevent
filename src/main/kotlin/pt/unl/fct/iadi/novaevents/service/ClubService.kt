@@ -4,36 +4,31 @@ import org.springframework.stereotype.Service
 import pt.unl.fct.iadi.novaevents.controller.dto.ClubDto
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.ClubCategorie
+import pt.unl.fct.iadi.novaevents.repositories.ClubRepository
+import pt.unl.fct.iadi.novaevents.repositories.EventRepository
 import pt.unl.fct.iadi.novaevents.service.exceptions.ClubNotFoundException
 
 @Service
 class ClubService(
-    private val clubs: List<Club> = listOf(
-        Club(id = 1, name = "Chess Club", description = "Chess Club description", ClubCategorie.SPORTS),
-        Club(
-            id = 2,
-            name = "Robotics Club",
-            description = "The Robotics Club is the place to turn ideas into machines",
-            ClubCategorie.TECHNOLOGY
-        ),
-        Club(id = 3, name = "Photography Club", description = "description", ClubCategorie.ARTS),
-        Club(id = 4, name = "Hiking & Outdoors Club", description = "description", ClubCategorie.SPORTS),
-        Club(id = 5, name = "Film Society", description = "description", ClubCategorie.SPORTS),
-    ),
+    private val clubRepository: ClubRepository,
     private val clubConverter: ClubConverter
 ) {
 
 
     fun findAll(): List<ClubDto> {
 
+        val clubs = clubRepository.findAll()
+
         return clubConverter.convertModelToDto(clubs)
     }
 
     fun findById(id: Long): ClubDto {
 
-        clubs.find { it.id == id }?.let {
-            return clubConverter.convertModelToDto(it)
+        val result = clubRepository.findById(id)
+        if(result.isEmpty){
+            throw ClubNotFoundException()
         }
-        throw ClubNotFoundException()
+
+        return clubConverter.convertModelToDto(result.get())
     }
 }

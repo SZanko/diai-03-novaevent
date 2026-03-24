@@ -2,8 +2,10 @@ package pt.unl.fct.iadi.novaevents.service
 
 import org.springframework.stereotype.Component
 import pt.unl.fct.iadi.novaevents.controller.dto.ClubDto
+import pt.unl.fct.iadi.novaevents.controller.dto.EventDto
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.ClubCategorie
+import pt.unl.fct.iadi.novaevents.model.Event
 
 @Component
 class ClubConverter: Converter<ClubDto, Club> {
@@ -13,6 +15,7 @@ class ClubConverter: Converter<ClubDto, Club> {
             name = dto.name,
             description = dto.description,
             category = ClubCategorie.valueOf(dto.category),
+            events = mutableListOf()
         )
     }
 
