@@ -70,6 +70,7 @@
               ncurses
               patchelf
               zlib
+              mycli
             ];
 
             shellHook =

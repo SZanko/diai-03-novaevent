@@ -36,9 +36,9 @@ class EventsService(
             club = club.get().name,
             name = model.name,
             date = model.date,
-            location = model.location.orElse(null),
+            location = model.location,
             type = EventTypeDTO.valueOf(model.type.name),
-            description = model.description.orElse(null),
+            description = model.description,
         )
     }
 
@@ -49,9 +49,9 @@ class EventsService(
             clubId = dto.clubId,
             name = dto.name,
             date = dto.date!!,
-            location = Optional.ofNullable(dto.location),
+            location = dto.location,
             type = EventType.valueOf(dto.type!!.name),
-            description = Optional.ofNullable(dto.description),
+            description = dto.description,
         )
     }
 
@@ -129,9 +129,9 @@ class EventsService(
             clubId = event.clubId,
             name = event.name,
             date = event.date!!,
-            location = Optional.ofNullable(event.location),
+            location = event.location,
             type = EventType.valueOf(event.type!!.name),
-            description = Optional.ofNullable(event.description)
+            description = event.description
         )
 
 

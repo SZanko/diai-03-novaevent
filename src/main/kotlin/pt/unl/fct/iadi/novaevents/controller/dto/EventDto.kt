@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull
 import org.springframework.format.annotation.DateTimeFormat
 import pt.unl.fct.iadi.novaevents.model.EventType
 import java.time.LocalDate
-import java.util.Optional
 
 data class EventDto(
     var id: Long = -1,

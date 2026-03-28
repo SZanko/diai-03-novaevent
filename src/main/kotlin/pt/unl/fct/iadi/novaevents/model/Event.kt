@@ -24,8 +24,8 @@ data class Event(
     val name: String,
     @field:NotNull(message = "Date is required")
     var date: LocalDate,
-    val location: Optional<String>,
+    val location: String?,
     @field:NotNull(message = "Event type is required")
     var type: EventType,
-    val description: Optional<String>,
+    val description: String?,
     )
