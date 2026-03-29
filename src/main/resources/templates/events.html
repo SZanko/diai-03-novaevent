@@ -40,11 +40,11 @@
             <td th:text="${event.type}"></td>
             <td th:text="${event.location}"></td>
             <td>
-                <a class="btn btn-secondary" th:href="@{/clubs/{clubid}/{id}/edit(clubid=${event.clubId}, id=${event.id})}">
+                <a class="btn btn-secondary" th:href="@{/clubs/{clubid}/events/{id}/edit(clubid=${event.clubId}, id=${event.id})}">
                     Edit
                 </a>
                 <a class="btn btn-secondary"
-                   th:href="@{/clubs/{clubid}/{id}/delete(clubid=${event.clubId}, id=${event.id})}">
+                   th:href="@{/clubs/{clubid}/events/{id}/delete(clubid=${event.clubId}, id=${event.id})}">
                     Delete
                 </a>
             </td>

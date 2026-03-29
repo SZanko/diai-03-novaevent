@@ -85,8 +85,10 @@ class EventsService(
         return convertModelToDto(filtered)
     }
 
-    fun getEventByClubIdAndId(club: Long, eventId: Long): EventDto {
-        throw EventNotFoundException()
+    fun getEventByClubIdAndId(clubId: Long, eventId: Long): EventDto {
+        val event = eventRepository.findByIdAndClubId(eventId, clubId)
+            .orElseThrow { EventNotFoundException() }
+        return convertModelToDto(event)
     }
 
     fun saveEvent(event: EventDto): EventDto {

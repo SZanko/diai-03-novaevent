@@ -99,6 +99,7 @@ class EventsController(
 
     @GetMapping("/clubs/{clubId}/events/{eventId}/edit")
     fun showEditForm(@PathVariable clubId: Long, @PathVariable eventId: Long, model: Model): String {
+        log.info("Called events edit route")
         val club = clubService.findById(clubId)
         val event = eventService.getEventByClubIdAndId(clubId, eventId)
         model.addAttribute("club", club)
