@@ -18,6 +18,7 @@
                 <th>Name</th>
                 <th>Category</th>
                 <th>Description</th>
+                <th>Count</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -35,9 +36,8 @@
                         <summary>Description</summary>
                         <p th:text="${club.description}"></p>
                     </details>
-
                 </td>
-
+                <td th:text="${club.eventCount}"></td>
                 <td>
                     <a th:href="@{/clubs/{id}(id=${club.id})}">EDIT</a>
                 </td>

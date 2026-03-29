@@ -17,7 +17,7 @@ data class Club(
     @field:Column(length = 2000)
     val description: String,
     @field:OneToMany(cascade = [(CascadeType.ALL)])
-    val events: MutableList<Event> = mutableListOf(),
+    var events: MutableList<Event> = mutableListOf(),
     val category: ClubCategorie,
 
 ) {

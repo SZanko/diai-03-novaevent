@@ -21,7 +21,7 @@ data class Event(
     val id: Long? = null,
     @ManyToOne
     @JoinColumn(name = "club_id", referencedColumnName = "id")
-    val club: Club? = null,
+    var club: Club? = null,
     @field:NotBlank(message = "Name is required")
     @field:Column(unique=true)
     val name: String,

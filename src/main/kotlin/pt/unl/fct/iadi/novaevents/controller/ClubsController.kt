@@ -25,7 +25,8 @@ class ClubsController(
 
     @GetMapping
     fun listClubs(model: Model): String {
-        model.addAttribute("clubs", clubService.findAll())
+        val clubs = clubService.findAll()
+        model.addAttribute("clubs", clubs)
         return "clubs"
     }
 
