@@ -21,7 +21,7 @@ class ClubConverter: Converter<ClubDto, Club> {
 
     override fun convertModelToDto(model: Club): ClubDto {
         return ClubDto(
-            id = model.id,
+            id = model.id ?: 0L,
             name = model.name,
             description = model.description,
             category = model.category.name

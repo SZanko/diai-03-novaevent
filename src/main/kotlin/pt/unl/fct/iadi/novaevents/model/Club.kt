@@ -12,12 +12,15 @@ import jakarta.persistence.OneToMany
 data class Club(
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long? = null,
     val name: String,
     @field:Column(length = 2000)
     val description: String,
     @field:OneToMany(cascade = [(CascadeType.ALL)])
-    val events: MutableList<Event>,
-    val category: ClubCategorie
-)
+    val events: MutableList<Event> = mutableListOf(),
+    val category: ClubCategorie,
+
+) {
+    constructor() : this(null, "", "", mutableListOf(), ClubCategorie.ARTS)
+}
 

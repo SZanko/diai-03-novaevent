@@ -26,13 +26,13 @@ class EventsService(
     private val eventRepository: EventRepository,
 ) {
     private fun convertModelToDto(model: Event): EventDto {
-        val club = clubRepository.findById(model.clubId)
-        if (club.isPresent) {
+        val club = clubRepository.findById(model.club?.id ?: -1L)
+        if (club.isEmpty) {
             throw ClubNotFoundException()
         }
         return EventDto(
-            id = model.id,
-            clubId = model.clubId,
+            id = model.id ?: 0,
+            clubId = club.get().id!!,
             club = club.get().name,
             name = model.name,
             date = model.date,
@@ -44,9 +44,15 @@ class EventsService(
 
     private fun convertDtoToModel(dto: EventDto): Event {
 
+        val club = clubRepository.findById(dto.clubId)
+        if (club.isEmpty) {
+            throw ClubNotFoundException()
+        }
+
+
         return Event(
             id = dto.id,
-            clubId = dto.clubId,
+            club = club.get(),
             name = dto.name,
             date = dto.date!!,
             location = dto.location,
@@ -68,7 +74,7 @@ class EventsService(
 
         val filtered = events.filter { event ->
             val matchesType = type == null || event.type.name == type
-            val matchesClub = club == null || event.clubId.toString() == club
+            val matchesClub = club == null || event.club?.id.toString() == club
             val matchesFrom = fromDate == null || !event.date.isBefore(fromDate)
             val matchesTo = toDate == null || !event.date.isAfter(toDate)
             matchesType && matchesClub && matchesFrom && matchesTo
@@ -124,9 +130,15 @@ class EventsService(
 
         var updatedEvent = existingEvent.get()
 
+        val existingClub = clubRepository.findById(event.clubId)
+        if (existingClub.isEmpty) {
+            throw ClubNotFoundException()
+        }
+
+
         updatedEvent = Event(
             id = eventId,
-            clubId = event.clubId,
+            club = existingClub.get(),
             name = event.name,
             date = event.date!!,
             location = event.location,

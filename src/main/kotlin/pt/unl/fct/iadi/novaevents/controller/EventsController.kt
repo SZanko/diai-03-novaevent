@@ -37,7 +37,12 @@ class EventsController(
         @RequestParam(required = false) to: String?
     ): String {
 
-        model.addAttribute("events", eventService.getEvents(type = type, club = club, from = from, to = to))
+        log.info("Called events route")
+
+        val events = eventService.getEvents(type = type, club = club, from = from, to = to)
+        log.info("Found ${events.size} events")
+
+        model.addAttribute("events", events)
 
         return "events"
     }

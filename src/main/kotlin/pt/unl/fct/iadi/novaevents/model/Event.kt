@@ -5,6 +5,8 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -16,9 +18,10 @@ data class Event(
     @field:Min(value = 1, message = "Event ID must be greater than or equal to 1")
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
-    @field:Min(value = 1, message = "Event ID must be greater than or equal to 1")
-    val clubId: Long,
+    val id: Long? = null,
+    @ManyToOne
+    @JoinColumn(name = "club_id", referencedColumnName = "id")
+    val club: Club? = null,
     @field:NotBlank(message = "Name is required")
     @field:Column(unique=true)
     val name: String,
@@ -29,3 +32,7 @@ data class Event(
     var type: EventType,
     val description: String?,
     )
+
+{
+    constructor() : this(null, null, "", LocalDate.now(), null, EventType.OTHER, null)
+}
