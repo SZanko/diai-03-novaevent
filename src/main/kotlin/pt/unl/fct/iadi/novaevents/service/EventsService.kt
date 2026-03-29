@@ -65,38 +65,24 @@ class EventsService(
         return models.map { convertModelToDto(it) }
     }
 
-    //fun getEvents(type: String?, club: String?, from: String?, to: String?): List<EventDto> {
-
-    //    val events = eventRepository.findAll() // I know it is not very efficient
-
-    //    val fromDate = from?.let { LocalDate.parse(it) }
-    //    val toDate = to?.let { LocalDate.parse(it) }
-
-    //    val filtered = events.filter { event ->
-    //        val matchesType = type == null || event.type.name == type
-    //        val matchesClub = club == null || event.club?.id.toString() == club
-    //        val matchesFrom = fromDate == null || !event.date.isBefore(fromDate)
-    //        val matchesTo = toDate == null || !event.date.isAfter(toDate)
-    //        matchesType && matchesClub && matchesFrom && matchesTo
-    //    }
-
-
-
-    //    return convertModelToDto(filtered)
-    //}
-
     fun getEvents(type: String?, club: String?, from: String?, to: String?): List<EventDto> {
+
+        val events = eventRepository.findAll() // I know it is not very efficient
+
         val fromDate = from?.let { LocalDate.parse(it) }
         val toDate = to?.let { LocalDate.parse(it) }
 
-        val events = when {
-            type != null -> eventRepository.findByType(type)
-            club != null -> eventRepository.findByClubId(club.toLong())
-            fromDate != null && toDate != null -> eventRepository.findByDateRange(fromDate, toDate)
-            else -> eventRepository.findAll()
+        val filtered = events.filter { event ->
+            val matchesType = type == null || event.type.name == type
+            val matchesClub = club == null || event.club?.id.toString() == club
+            val matchesFrom = fromDate == null || !event.date.isBefore(fromDate)
+            val matchesTo = toDate == null || !event.date.isAfter(toDate)
+            matchesType && matchesClub && matchesFrom && matchesTo
         }
 
-        return convertModelToDto(events)
+
+
+        return convertModelToDto(filtered)
     }
 
     fun getEventByClubIdAndId(clubId: Long, eventId: Long): EventDto {
@@ -125,12 +111,12 @@ class EventsService(
         )
     }
 
-    fun deleteEvent(eventId: Long) {
-        val toBeDeleted = eventRepository.findById(eventId);
+    fun deleteEvent(club: Long, eventId: Long) {
+        val toBeDeleted = clubRepository.findById(club);
         if (toBeDeleted.isEmpty) {
             throw EventNotFoundException()
         }
-        eventRepository.deleteById(eventId)
+        clubRepository.deleteById(club)
     }
 
     fun updateEvent(eventId: Long, event: EventDto): EventDto? {
