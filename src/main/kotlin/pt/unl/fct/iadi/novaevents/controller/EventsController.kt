@@ -157,7 +157,7 @@ class EventsController(
 
     @DeleteMapping("/clubs/{clubId}/events/{eventId}")
     fun deleteEvent(@PathVariable clubId: Long, @PathVariable eventId: Long): String {
-        eventService.deleteEvent(clubId, eventId)
+        eventService.deleteEvent(eventId)
         return "redirect:/clubs/$clubId"
     }
 
