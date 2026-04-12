@@ -3,238 +3,218 @@ package pt.unl.fct.iadi.novaevents.service
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.crypto.password.PasswordEncoder
+import pt.unl.fct.iadi.novaevents.model.AppUser
 import pt.unl.fct.iadi.novaevents.model.Club
 import pt.unl.fct.iadi.novaevents.model.ClubCategorie
 import pt.unl.fct.iadi.novaevents.model.Event
 import pt.unl.fct.iadi.novaevents.model.EventType
+import pt.unl.fct.iadi.novaevents.model.RoleName
+import pt.unl.fct.iadi.novaevents.repositories.AppUserRepository
 import pt.unl.fct.iadi.novaevents.repositories.ClubRepository
-import pt.unl.fct.iadi.novaevents.repositories.EventRepository
 import java.time.LocalDate
-import java.util.Optional
 
 @Configuration
 class DataInitializer(
+    private val appUserRepository: AppUserRepository,
     private val clubRepository: ClubRepository,
-    private val eventRepository: EventRepository,
+    private val passwordEncoder: PasswordEncoder,
 ) : ApplicationRunner {
+
     override fun run(args: ApplicationArguments?) {
+        seedUserIfMissing("alice", "password123", RoleName.ROLE_EDITOR)
+        seedUserIfMissing("bob", "password123", RoleName.ROLE_EDITOR)
+        seedUserIfMissing("charlie", "password123", RoleName.ROLE_ADMIN)
+
+        if (clubRepository.count() > 0) {
+            return
+        }
+
+        val alice = appUserRepository.findByUsername("alice").orElseThrow()
+        val bob = appUserRepository.findByUsername("bob").orElseThrow()
+
         val club1 = Club(
-            //id = 1
             name = "Chess Club",
             description = "Chess Club description",
-            category = ClubCategorie.SPORTS
+            category = ClubCategorie.SPORTS,
         )
         val club2 = Club(
-            // id = 2,
             name = "Robotics Club",
             description = "The Robotics Club is the place to turn ideas into machines",
-            category = ClubCategorie.TECHNOLOGY
-
+            category = ClubCategorie.TECHNOLOGY,
         )
         val club3 = Club(
-            //id = 3,
-            name = "Photography Club", description = "description",
-            category = ClubCategorie.ARTS
+            name = "Photography Club",
+            description = "description",
+            category = ClubCategorie.ARTS,
         )
         val club4 = Club(
-            //id = 4,
-            name = "Hiking & Outdoors Club", description = "description",
-
-            category = ClubCategorie.SPORTS
+            name = "Hiking & Outdoors Club",
+            description = "description",
+            category = ClubCategorie.SPORTS,
         )
-        val club5 =Club(
-            //id = 5,
-            name = "Film Society", description = "description",
-
-            category = ClubCategorie.SPORTS
+        val club5 = Club(
+            name = "Film Society",
+            description = "description",
+            category = ClubCategorie.SPORTS,
         )
-        val clubs: List<Club> = listOf(
-            club1,
-            club2,
-            club3,
-            club4,
-            club5
-        )
+        val clubs = listOf(club1, club2, club3, club4, club5)
 
-
-        val event1 =Event(
-            //id = 1,
+        val event1 = Event(
             club = clubs[0],
-            //name = "Beginner&#39;s Chess Workshop",
             name = "Beginner's Chess Workshop",
             date = LocalDate.of(2026, 3, 10),
             location = "Room A101",
             type = EventType.WORKSHOP,
-            description = "Beginner Workshop"
+            description = "Beginner Workshop",
+            owner = alice,
         )
-        val event2 =Event(
-            //id = 2,
+        val event2 = Event(
             club = clubs[0],
             name = "Spring Chess Tournament",
             date = LocalDate.of(2026, 4, 5),
             location = "Main Hall",
             type = EventType.COMPETITION,
-            description = "Spring Tournament"
+            description = "Spring Tournament",
+            owner = alice,
         )
         val event3 = Event(
-            //id = 3,
             club = clubs[0],
             name = "Advanced Openings Talk",
             date = LocalDate.of(2026, 5, 20),
             location = "Room A101",
             type = EventType.TALK,
-            description = "Advanced Openings Talk"
+            description = "Advanced Openings Talk",
+            owner = alice,
         )
         val event4 = Event(
-            //id = 4,
             club = clubs[1],
             name = "Arduino Intro Workshop",
             date = LocalDate.of(2026, 3, 15),
             location = "Engineering Lab 2",
             type = EventType.WORKSHOP,
-            description = "Arduino Introduction Workshop"
+            description = "Arduino Introduction Workshop",
+            owner = bob,
         )
         val event5 = Event(
-            //id = 5,
             club = clubs[1],
             name = "RoboCup Preparation Meeting",
             date = LocalDate.of(2026, 3, 28),
             location = "Engineering Lab 1",
             type = EventType.MEETING,
-            description = "RoboCup Preparation Meeting"
+            description = "RoboCup Preparation Meeting",
+            owner = bob,
         )
         val event6 = Event(
-            //id = 6,
             club = clubs[1],
             name = "Sensor Integration Talk",
             date = LocalDate.of(2026, 4, 22),
             location = "Auditorium B",
             type = EventType.TALK,
-            description = "Sensor Integration Talk"
+            description = "Sensor Integration Talk",
+            owner = bob,
         )
         val event7 = Event(
-            //id = 7,
             club = clubs[1],
             name = "Regional Robotics Competition",
             date = LocalDate.of(2026, 6, 1),
             location = "Sports Hall",
             type = EventType.COMPETITION,
-            description = "Regional Robotics Competition"
+            description = "Regional Robotics Competition",
+            owner = bob,
         )
         val event8 = Event(
-            //id = 8,
             club = clubs[2],
             name = "Night Photography Workshop",
             date = LocalDate.of(2026, 3, 22),
             location = "Campus Rooftop",
             type = EventType.WORKSHOP,
-            description = "Night Photography Workshop"
+            description = "Night Photography Workshop",
+            owner = alice,
         )
         val event9 = Event(
-            //id = 9,
             club = clubs[2],
             name = "Portrait Photography Talk",
             date = LocalDate.of(2026, 4, 14),
             location = "Arts Studio 3",
             type = EventType.TALK,
-            description = "Portrait Photography Talk"
+            description = "Portrait Photography Talk",
+            owner = alice,
         )
         val event10 = Event(
-            //id = 10,
             club = clubs[2],
             name = "Photo Walk & Social",
             date = LocalDate.of(2026, 5, 9),
             location = "Main Entrance",
             type = EventType.SOCIAL,
-            description = "Photo Walk and Social"
+            description = "Photo Walk and Social",
+            owner = alice,
         )
         val event11 = Event(
-            //id = 11,
             club = clubs[3],
-            name = "Serra da Arrábida Hike",
+            name = "Serra da Arrabida Hike",
             date = LocalDate.of(2026, 3, 29),
             location = "Bus Stop Central",
             type = EventType.OTHER,
-            description = "Serra da Arrábida Hike"
+            description = "Serra da Arrabida Hike",
+            owner = bob,
         )
         val event12 = Event(
-            //id = 12,
             club = clubs[3],
             name = "Trail Safety Workshop",
             date = LocalDate.of(2026, 4, 8),
             location = "Room C205",
             type = EventType.WORKSHOP,
-            description = "Trail Safety Workshop"
+            description = "Trail Safety Workshop",
+            owner = bob,
         )
         val event13 = Event(
-            //id = 13,
             club = clubs[3],
             name = "Spring Camping Trip",
             date = LocalDate.of(2026, 5, 15),
             location = "Bus Stop Central",
             type = EventType.SOCIAL,
-            description = "Spring Camping Trip"
+            description = "Spring Camping Trip",
+            owner = bob,
         )
         val event14 = Event(
-            //id = 14,
             club = clubs[4],
             name = "Kubrick Retrospective Screening",
             date = LocalDate.of(2026, 3, 18),
             location = "Cinema Room",
             type = EventType.SOCIAL,
-            description = "Kubrick Retrospective Screening"
+            description = "Kubrick Retrospective Screening",
+            owner = bob,
         )
         val event15 = Event(
-            //id = 15,
             club = clubs[4],
             name = "Screenwriting Workshop",
             date = LocalDate.of(2026, 4, 30),
             location = "Arts Studio 1",
             type = EventType.WORKSHOP,
-            description = "Screenwriting Workshop"
+            description = "Screenwriting Workshop",
+            owner = bob,
         )
 
-        val events: MutableList<Event> = mutableListOf(
-            event1,
-            event2,
-            event3,
-            event4,
-            event5,
-            event6,
-            event7,
-            event8,
-            event9,
-            event10,
-            event11,
-            event12,
-            event13,
-            event14,
-            event15,
-        )
-
-
-        club1.events.add(event1)
-        club1.events.add(event2)
-        club1.events.add(event3)
-
-        club2.events.add(event4)
-        club2.events.add(event5)
-        club2.events.add(event6)
-        club2.events.add(event7)
-
-        club3.events.add(event8)
-        club3.events.add(event9)
-        club3.events.add(event10)
-
-        club4.events.add(event11)
-        club4.events.add(event12)
-        club4.events.add(event13)
-
-        club5.events.add(event14)
-        club5.events.add(event15)
+        club1.events.addAll(listOf(event1, event2, event3))
+        club2.events.addAll(listOf(event4, event5, event6, event7))
+        club3.events.addAll(listOf(event8, event9, event10))
+        club4.events.addAll(listOf(event11, event12, event13))
+        club5.events.addAll(listOf(event14, event15))
 
         clubRepository.saveAll(clubs)
+    }
 
-        eventRepository.saveAll(events)
+    private fun seedUserIfMissing(username: String, rawPassword: String, role: RoleName) {
+        if (appUserRepository.existsByUsername(username)) {
+            return
+        }
+
+        val user = AppUser(
+            username = username,
+            password = passwordEncoder.encode(rawPassword),
+        )
+        user.replaceRoles(listOf(role))
+        appUserRepository.save(user)
     }
 }

@@ -1,18 +1,26 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
 </head>
 <body>
 <header>
     <div th:fragment="header">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" th:href="@{/}">Nova Events</a>
-            <a class="navbar-brand" th:href="@{/clubs}">Clubs</a>
-            <a class="navbar-brand" th:href="@{/events}">Events</a>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light px-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" th:href="@{/}">Nova Events</a>
+                <div class="d-flex align-items-center gap-2">
+                    <a class="nav-link" th:href="@{/clubs}">Clubs</a>
+                    <a class="nav-link" th:href="@{/events}">Events</a>
+                    <a class="btn btn-outline-primary btn-sm" sec:authorize="isAnonymous()" th:href="@{/login}">Login</a>
+                    <span id="navbar-username" class="navbar-text" sec:authorize="isAuthenticated()" sec:authentication="name"></span>
+                    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">Logout</button>
+                    </form>
+                </div>
+            </div>
         </nav>
     </div>
-
 </header>
 </body>
 </html>

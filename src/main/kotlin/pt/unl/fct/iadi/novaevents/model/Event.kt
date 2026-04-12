@@ -2,6 +2,7 @@ package pt.unl.fct.iadi.novaevents.model
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -11,7 +12,6 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDate
-import java.util.Optional
 
 @Entity
 data class Event(
@@ -23,7 +23,7 @@ data class Event(
     @JoinColumn(name = "club_id", referencedColumnName = "id")
     var club: Club? = null,
     @field:NotBlank(message = "Name is required")
-    @field:Column(unique=true)
+    @field:Column(unique = true)
     val name: String,
     @field:NotNull(message = "Date is required")
     var date: LocalDate,
@@ -31,8 +31,9 @@ data class Event(
     @field:NotNull(message = "Event type is required")
     var type: EventType,
     val description: String?,
-    )
-
-{
-    constructor() : this(null, null, "", LocalDate.now(), null, EventType.OTHER, null)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+    var owner: AppUser? = null,
+) {
+    constructor() : this(null, null, "", LocalDate.now(), null, EventType.OTHER, null, null)
 }
