@@ -147,7 +147,8 @@
 					</args>
 					<compilerPlugins>
 						<plugin>spring</plugin>
-					</compilerPlugins>
+                        <plugin>jpa</plugin>
+                    </compilerPlugins>
                     <jvmTarget>17</jvmTarget>
                 </configuration>
 				<dependencies>
@@ -156,7 +157,12 @@
 						<artifactId>kotlin-maven-allopen</artifactId>
 						<version>${kotlin.version}</version>
 					</dependency>
-				</dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-noarg</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                </dependencies>
 			</plugin>
 		</plugins>
 	</build>
