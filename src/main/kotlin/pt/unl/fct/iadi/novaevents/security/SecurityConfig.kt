@@ -1,5 +1,6 @@
 package pt.unl.fct.iadi.novaevents.security
 
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,9 +15,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.context.NullSecurityContextRepository
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import org.springframework.security.web.util.matcher.RequestMatcher
 import pt.unl.fct.iadi.novaevents.service.DatabaseUserDetailsManager
 
 @Configuration
@@ -24,7 +27,6 @@ import pt.unl.fct.iadi.novaevents.service.DatabaseUserDetailsManager
 @EnableMethodSecurity
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val cookieAuthenticationEntryPoint: CookieAuthenticationEntryPoint,
     private val loginRedirectCookieService: LoginRedirectCookieService,
     private val jwtService: JwtService,
 ) {
@@ -49,9 +51,22 @@ class SecurityConfig(
         val csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse().apply {
             setCookiePath("/")
         }
+        val requiresCsrf = RequestMatcher { request: HttpServletRequest ->
+            val method = request.method
+            val unsafeMethod = method != HttpMethod.GET.name() &&
+                method != HttpMethod.HEAD.name() &&
+                method != HttpMethod.TRACE.name() &&
+                method != HttpMethod.OPTIONS.name()
+            val hasJwtCookie = request.cookies?.any { it.name == JwtService.JWT_COOKIE_NAME && it.value.isNotBlank() } == true
+            unsafeMethod && hasJwtCookie
+        }
+        val loginEntryPoint = LoginUrlAuthenticationEntryPoint("/login")
 
         http
-            .csrf { csrf -> csrf.csrfTokenRepository(csrfTokenRepository) }
+            .csrf { csrf ->
+                csrf.csrfTokenRepository(csrfTokenRepository)
+                csrf.requireCsrfProtectionMatcher(requiresCsrf)
+            }
             .securityContext { securityContext ->
                 securityContext.securityContextRepository(NullSecurityContextRepository())
             }
@@ -69,13 +84,16 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.POST, "/clubs/*/events").hasAnyRole("EDITOR", "ADMIN")
                     .requestMatchers(HttpMethod.GET, "/clubs/*/events/*/edit").hasAnyRole("EDITOR", "ADMIN")
                     .requestMatchers(HttpMethod.PUT, "/clubs/*/events/*").hasAnyRole("EDITOR", "ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/clubs/*/events/*/delete").authenticated()
-                    .requestMatchers(HttpMethod.DELETE, "/clubs/*/events/*").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/clubs/*/events/*/delete").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/clubs/*/events/*").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.POST, "/logout").authenticated()
                     .anyRequest().authenticated()
             }
             .exceptionHandling { exceptions ->
-                exceptions.authenticationEntryPoint(cookieAuthenticationEntryPoint)
+                exceptions.authenticationEntryPoint { request, response, authException ->
+                    loginRedirectCookieService.saveTarget(request, response)
+                    loginEntryPoint.commence(request, response, authException)
+                }
                 exceptions.accessDeniedHandler { _, response, _ ->
                     response.sendError(HttpServletResponse.SC_FORBIDDEN)
                 }

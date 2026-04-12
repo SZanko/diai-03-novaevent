@@ -10,7 +10,11 @@ import java.util.Optional
 @Repository
 interface EventRepository : JpaRepository<Event, Long> {
 
-    fun findEventsByClubId(clubId: Long): List<Event>
+    @Query("SELECT e FROM Event e JOIN FETCH e.club JOIN FETCH e.owner")
+    override fun findAll(): List<Event>
+
+    @Query("SELECT e FROM Event e JOIN FETCH e.club JOIN FETCH e.owner WHERE e.club.id = :clubId")
+    fun findEventsByClubId(@Param("clubId") clubId: Long): List<Event>
 
     fun findEventByName(name: String): Optional<Event>
 
@@ -20,9 +24,12 @@ interface EventRepository : JpaRepository<Event, Long> {
 
     fun existsByIdAndOwnerUsername(id: Long, username: String): Boolean
 
-    @Query("SELECT e FROM Event e WHERE e.id = :eventId AND e.club.id = :clubId")
+    @Query("SELECT e FROM Event e JOIN FETCH e.club JOIN FETCH e.owner WHERE e.id = :eventId AND e.club.id = :clubId")
     fun findByIdAndClubId(
         @Param("eventId") eventId: Long,
         @Param("clubId") clubId: Long,
     ): Optional<Event>
+
+    @Query("SELECT e FROM Event e JOIN FETCH e.club JOIN FETCH e.owner WHERE e.id = :eventId")
+    override fun findById(@Param("eventId") eventId: Long): Optional<Event>
 }

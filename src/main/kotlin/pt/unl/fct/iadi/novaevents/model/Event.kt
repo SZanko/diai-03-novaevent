@@ -19,7 +19,7 @@ data class Event(
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "club_id", referencedColumnName = "id")
     var club: Club? = null,
     @field:NotBlank(message = "Name is required")
@@ -31,7 +31,7 @@ data class Event(
     @field:NotNull(message = "Event type is required")
     var type: EventType,
     val description: String?,
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     var owner: AppUser? = null,
 ) {

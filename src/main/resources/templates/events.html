@@ -36,16 +36,8 @@
                 <td th:text="${event.location} ?: '—'"></td>
                 <td th:text="${event.ownerUsername}"></td>
                 <td class="d-flex gap-2">
-                    <a class="btn btn-sm btn-outline-primary"
-                       th:if="${#authentication != null and #authentication.name == event.ownerUsername}"
-                       th:href="@{/clubs/{clubId}/events/{eventId}/edit(clubId=${event.clubId}, eventId=${event.id})}">
-                        Edit
-                    </a>
-                    <a class="btn btn-sm btn-outline-danger"
-                       th:if="${#authorization.expression('hasRole(''ADMIN'')') or (#authentication != null and #authentication.name == event.ownerUsername)}"
-                       th:href="@{/clubs/{clubId}/events/{eventId}/delete(clubId=${event.clubId}, eventId=${event.id})}">
-                        Delete
-                    </a>
+                    <a class="btn btn-sm btn-outline-primary" th:href="@{/clubs/{clubId}/events/{eventId}/edit(clubId=${event.clubId}, eventId=${event.id})}">Edit</a>
+                    <a class="btn btn-sm btn-outline-danger" th:href="@{/clubs/{clubId}/events/{eventId}/delete(clubId=${event.clubId}, eventId=${event.id})}">Delete</a>
                 </td>
             </tr>
             </tbody>

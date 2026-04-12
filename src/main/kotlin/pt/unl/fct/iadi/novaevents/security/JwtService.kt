@@ -53,7 +53,7 @@ class JwtService(
     }
 
     fun addJwtCookie(response: jakarta.servlet.http.HttpServletResponse, token: String) {
-        response.addHeader(HttpHeaders.SET_COOKIE, buildJwtCookie(token).toString())
+        response.addHeader(HttpHeaders.SET_COOKIE, buildJwtCookie(token).build().toString())
     }
 
     fun clearJwtCookie(response: jakarta.servlet.http.HttpServletResponse) {
