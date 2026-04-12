@@ -15,9 +15,9 @@ import javax.crypto.SecretKey
 
 @Service
 class JwtService(
-    @Value("\${app.security.jwt.secret}") jwtSecret: String,
-    @Value("\${app.security.jwt.expiration-seconds}") private val expirationSeconds: Long,
-    @Value("\${app.security.jwt.cookie-secure:false}") private val cookieSecure: Boolean,
+    @param:Value("\${app.security.jwt.secret:NovaEventsJwtSecretKeyForSigningTokens2026NovaEvents}") jwtSecret: String,
+    @param:Value("\${app.security.jwt.expiration-seconds:43200}") private val expirationSeconds: Long,
+    @param:Value("\${app.security.jwt.cookie-secure:false}") private val cookieSecure: Boolean,
 ) {
     private val signingKey: SecretKey = Keys.hmacShaKeyFor(jwtSecret.toByteArray(StandardCharsets.UTF_8))
 
@@ -38,14 +38,6 @@ class JwtService(
             .build()
             .parseSignedClaims(token)
             .payload
-    }
-
-    fun addJwtCookieHeader(token: String, headers: MutableMap<String, MutableList<String>>) {
-        headers.addSetCookie(buildJwtCookie(token).toString())
-    }
-
-    fun clearJwtCookieHeader(headers: MutableMap<String, MutableList<String>>) {
-        headers.addSetCookie(buildJwtCookie("").maxAge(Duration.ZERO).build().toString())
     }
 
     fun addJwtCookie(response: jakarta.servlet.http.HttpServletResponse, token: String) {
@@ -71,8 +63,4 @@ class JwtService(
     companion object {
         const val JWT_COOKIE_NAME = "jwt"
     }
-}
-
-private fun MutableMap<String, MutableList<String>>.addSetCookie(value: String) {
-    computeIfAbsent(HttpHeaders.SET_COOKIE) { mutableListOf() }.add(value)
 }
