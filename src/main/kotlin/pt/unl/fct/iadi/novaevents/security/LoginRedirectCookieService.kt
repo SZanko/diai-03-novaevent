@@ -2,7 +2,7 @@ package pt.unl.fct.iadi.novaevents.security
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
@@ -13,8 +13,11 @@ import java.time.Duration
 
 @Service
 class LoginRedirectCookieService(
-    @Value("\${app.security.jwt.cookie-secure:false}") private val cookieSecure: Boolean,
+    private val environment: Environment,
 ) {
+    private val cookieSecure: Boolean
+        get() = environment.getProperty("app.security.jwt.cookie-secure", Boolean::class.java, false)
+
     fun saveTarget(request: HttpServletRequest, response: HttpServletResponse) {
         if (request.method != "GET") {
             return

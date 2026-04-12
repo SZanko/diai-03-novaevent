@@ -3,7 +3,7 @@ package pt.unl.fct.iadi.novaevents.security
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
@@ -15,11 +15,23 @@ import javax.crypto.SecretKey
 
 @Service
 class JwtService(
-    @param:Value("\${app.security.jwt.secret:NovaEventsJwtSecretKeyForSigningTokens2026NovaEvents}") jwtSecret: String,
-    @param:Value("\${app.security.jwt.expiration-seconds:43200}") private val expirationSeconds: Long,
-    @param:Value("\${app.security.jwt.cookie-secure:false}") private val cookieSecure: Boolean,
+    private val environment: Environment,
 ) {
-    private val signingKey: SecretKey = Keys.hmacShaKeyFor(jwtSecret.toByteArray(StandardCharsets.UTF_8))
+    private val signingKey: SecretKey by lazy {
+        Keys.hmacShaKeyFor(jwtSecret.toByteArray(StandardCharsets.UTF_8))
+    }
+
+    private val jwtSecret: String
+        get() = environment.getProperty(
+            "app.security.jwt.secret",
+            "NovaEventsJwtSecretKeyForSigningTokens2026NovaEvents",
+        )
+
+    private val expirationSeconds: Long
+        get() = environment.getProperty("app.security.jwt.expiration-seconds", Long::class.java, 43200L)
+
+    private val cookieSecure: Boolean
+        get() = environment.getProperty("app.security.jwt.cookie-secure", Boolean::class.java, false)
 
     fun generateToken(username: String, authorities: Collection<String>): String {
         val now = Instant.now()
