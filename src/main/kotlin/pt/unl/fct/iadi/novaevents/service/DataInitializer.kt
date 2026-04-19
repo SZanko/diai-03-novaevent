@@ -25,6 +25,9 @@ class DataInitializer(
         seedUserIfMissing("alice", "password123", RoleName.ROLE_EDITOR)
         seedUserIfMissing("bob", "password123", RoleName.ROLE_EDITOR)
         seedUserIfMissing("charlie", "password123", RoleName.ROLE_ADMIN)
+        seedUserIfMissing("editor1", "editor1pass", RoleName.ROLE_EDITOR)
+        seedUserIfMissing("editor2", "editor2pass", RoleName.ROLE_EDITOR)
+        seedUserIfMissing("admin", "adminpass", RoleName.ROLE_ADMIN)
 
         if (clubRepository.count() > 0) {
             return

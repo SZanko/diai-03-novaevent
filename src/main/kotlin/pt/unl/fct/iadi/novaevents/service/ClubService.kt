@@ -17,7 +17,7 @@ class ClubService(
 
     fun findAll(): List<ClubDto> {
 
-        val clubs = clubRepository.findAll()
+        val clubs = clubRepository.findAllWithEvents()
 
         return clubConverter.convertModelToDto(clubs)
     }

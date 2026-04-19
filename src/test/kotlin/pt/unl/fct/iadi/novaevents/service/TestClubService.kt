@@ -17,7 +17,7 @@ class TestClubService {
 
     @Test
     fun `findAll returns converted clubs`() {
-        `when`(clubRepository.findAll()).thenReturn(
+        `when`(clubRepository.findAllWithEvents()).thenReturn(
             listOf(Club(id = 1, name = "Robotics Club", description = "Robots", category = ClubCategorie.TECHNOLOGY)),
         )
 
@@ -37,4 +37,3 @@ class TestClubService {
         }
     }
 }
-

@@ -12,6 +12,9 @@ interface ClubRepository : JpaRepository<Club, Long> {
     @Query("SELECT DISTINCT c FROM Club c LEFT JOIN FETCH c.events")
     override fun findAll(): List<Club>
 
+    @Query("SELECT DISTINCT c FROM Club c LEFT JOIN FETCH c.events")
+    fun findAllWithEvents(): List<Club>
+
     @Query("SELECT DISTINCT c FROM Club c LEFT JOIN FETCH c.events WHERE c.id = :id")
     override fun findById(id: Long): Optional<Club>
 }
