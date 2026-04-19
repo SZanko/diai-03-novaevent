@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
@@ -47,6 +48,39 @@ class SecurityConfig(
     }
 
     @Bean
+    @Order(1)
+    fun apiSecurityFilterChain(http: HttpSecurity, authenticationProvider: AuthenticationProvider): SecurityFilterChain {
+        http
+            .securityMatcher("/api/**")
+            .csrf { csrf -> csrf.disable() }
+            .securityContext { securityContext ->
+                securityContext.securityContextRepository(NullSecurityContextRepository())
+            }
+            .sessionManagement { sessions ->
+                sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+            .requestCache { cache -> cache.disable() }
+            .formLogin { form -> form.disable() }
+            .httpBasic { basic -> basic.disable() }
+            .authorizeHttpRequests { auth ->
+                auth.anyRequest().authenticated()
+            }
+            .exceptionHandling { exceptions ->
+                exceptions.authenticationEntryPoint { _, response, _ ->
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+                }
+                exceptions.accessDeniedHandler { _, response, _ ->
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN)
+                }
+            }
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+
+        return http.build()
+    }
+
+    @Bean
+    @Order(2)
     fun securityFilterChain(http: HttpSecurity, authenticationProvider: AuthenticationProvider): SecurityFilterChain {
         val csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse().apply {
             setCookiePath("/")

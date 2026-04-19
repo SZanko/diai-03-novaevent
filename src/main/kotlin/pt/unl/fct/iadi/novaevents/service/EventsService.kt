@@ -15,6 +15,7 @@ import pt.unl.fct.iadi.novaevents.repositories.EventRepository
 import pt.unl.fct.iadi.novaevents.service.exceptions.ClubNotFoundException
 import pt.unl.fct.iadi.novaevents.service.exceptions.EventDuplicateNameException
 import pt.unl.fct.iadi.novaevents.service.exceptions.EventNotFoundException
+import pt.unl.fct.iadi.novaevents.service.exceptions.EventOutdoorRuleException
 import pt.unl.fct.iadi.novaevents.service.exceptions.EventValidationException
 import java.time.LocalDate
 
@@ -24,7 +25,12 @@ class EventsService(
     private val clubRepository: ClubRepository,
     private val eventRepository: EventRepository,
     private val appUserRepository: AppUserRepository,
+    private val weatherService: WeatherService,
 ) {
+    private companion object {
+        const val OUTDOOR_CLUB_NAME = "Hiking & Outdoors Club"
+    }
+
     private fun convertModelToDto(model: Event): EventDto {
         val club = model.club ?: throw ClubNotFoundException()
         return EventDto(
@@ -61,6 +67,24 @@ class EventsService(
         }
     }
 
+    private fun validateOutdoorCreation(event: EventDto, club: Club) {
+        if (club.name != OUTDOOR_CLUB_NAME) {
+            return
+        }
+
+        val location = event.location?.trim().orEmpty()
+        if (location.isBlank()) {
+            throw EventOutdoorRuleException("location", "Location is required for outdoor events")
+        }
+
+        if (weatherService.isRaining(location) == true) {
+            throw EventOutdoorRuleException(
+                "location",
+                "It is currently raining at \"$location\" — outdoor events cannot be created in bad weather",
+            )
+        }
+    }
+
     fun getEvents(type: String?, club: String?, from: String?, to: String?): List<EventDto> {
         val events = eventRepository.findAll()
         val fromDate = from?.let(LocalDate::parse)
@@ -84,15 +108,18 @@ class EventsService(
     }
 
     fun saveEvent(event: EventDto, ownerUsername: String): EventDto {
+        val club = findClub(event.clubId)
+        validateOutdoorCreation(event, club)
+
         if (eventRepository.existsByNameIgnoreCase(event.name)) {
             throw EventDuplicateNameException()
         }
 
         val toBeSaved = Event(
-            club = findClub(event.clubId),
+            club = club,
             name = event.name,
             date = event.date!!,
-            location = event.location,
+            location = event.location?.trim()?.takeIf { it.isNotEmpty() },
             type = EventType.valueOf(event.type!!.name),
             description = event.description,
             owner = findOwner(ownerUsername),

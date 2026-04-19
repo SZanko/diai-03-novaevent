@@ -17,6 +17,7 @@ import pt.unl.fct.iadi.novaevents.controller.dto.EventDto
 import pt.unl.fct.iadi.novaevents.service.ClubService
 import pt.unl.fct.iadi.novaevents.service.EventsService
 import pt.unl.fct.iadi.novaevents.service.exceptions.EventDuplicateNameException
+import pt.unl.fct.iadi.novaevents.service.exceptions.EventOutdoorRuleException
 
 @Controller
 class EventsController(
@@ -74,6 +75,11 @@ class EventsController(
             "redirect:/clubs/$clubId/events/${savedEvent.id}"
         } catch (exception: EventDuplicateNameException) {
             bindingResult.rejectValue("name", "duplicate", exception.message ?: "An event with this name already exists")
+            model.addAttribute("club", club)
+            model.addAttribute("isEdit", false)
+            "event-add"
+        } catch (exception: EventOutdoorRuleException) {
+            bindingResult.rejectValue(exception.field, "outdoor", exception.message ?: "Outdoor event rule failed")
             model.addAttribute("club", club)
             model.addAttribute("isEdit", false)
             "event-add"
